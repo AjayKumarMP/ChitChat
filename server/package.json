@@ -1,0 +1,27 @@
+{
+  "name": "chitchat",
+  "version": "1.0.0",
+  "description": "server handles all the chat operations from the clients",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AjayKumarMP/ChitChat.git"
+  },
+  "author": "Ajay Kumar MP",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AjayKumarMP/ChitChat/issues"
+  },
+  "homepage": "https://github.com/AjayKumarMP/ChitChat#readme",
+  "dependencies": {
+    "express": "^4.16.3",
+    "socket.io": "^2.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.4"
+  }
+}
