@@ -1,24 +1,25 @@
 var User = require('../models/user');
+var { loginUser, registreUser, logoutUser } = require('../service/authService');
+var logger = require('../lib/logger');
 
 module.exports = {
-    handleChatOps: (io)=>{
+    handleChatOps: (io) => {
         var users = [];
-        io.on('connection',  (socket)=>{
+        io.on('connection', (socket) => {
 
-            console.log("User conneced");
-
-            socket.on('login' ,async (user, callback)=>{
-                var newUser = await User.find({where: {email:user.email}});
-                callback(newUser);
+            logger.info("New User conneced");
+            console.log("New User conneced");
+            
+            socket.on('login', (user, callback)=>{
+                loginUser(user, callback);
+            });
+            
+            socket.on('register', (user, callback)=>{
+                registreUser(user, callback, socket.id);
             });
 
-            socket.on('register' ,async (user, callback)=>{
-                var newUser = await User.create({
-                    name: user.name,
-                    email: user.email,
-                    socketId: socket.id
-                });
-                callback(newUser);
+            socket.on('disconnect', () => {
+                logoutUser(socket);
             });
 
         });

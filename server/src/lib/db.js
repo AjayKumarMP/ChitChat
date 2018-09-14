@@ -16,7 +16,7 @@ sequelize
    
 
     sequelize
-    .sync({force:false})
+    .sync({force: false})
     .then((success) => { 
         console.log("syncing is done");
     }, (err) => {

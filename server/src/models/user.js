@@ -19,6 +19,10 @@ var User = db.sequelize.define('USER',{
     socketId: {
         type: db.Sequelize.STRING,
         allowNull:false,
+    },
+    active: {
+        type: db.Sequelize.BOOLEAN,
+        allowNull:false,
     }
 },{
     freezeTableName: true,
