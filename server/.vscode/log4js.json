@@ -5,7 +5,7 @@
     "categories": {
         "default": {
             "appenders": [ "out" ],
-            "level": "debug"
+            "level": "info"
         }
     }
 }

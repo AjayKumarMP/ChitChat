@@ -1,35 +1,30 @@
 var db = require('../lib/db');
-var User = db.sequelize.define('USER',{
-    id:{
+const Pending_messages = require('./pending_messages');
+var User = db.sequelize.define('USER', {
+    id: {
         type: db.Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true
     },
     name: {
         type: db.Sequelize.STRING,
-        allowNull:false
+        allowNull: false,
+        unique: true
     },
     email: {
         type: db.Sequelize.STRING,
-        allowNull:false,
-        validate:{
+        allowNull: false,
+        unique: true,
+        validate: {
             isEmail: true,
         }
-    },
-    socketId: {
-        type: db.Sequelize.STRING,
-        allowNull:false,
-    },
-    active: {
-        type: db.Sequelize.BOOLEAN,
-        allowNull:false,
     }
-},{
-    freezeTableName: true,
-    tableName: "chat_users",
-    paranoid: true,
-});
+}, {
+        freezeTableName: true,
+        tableName: "chat_users",
+        paranoid: true,
+    });
 
-
+User.hasMany(Pending_messages, {as : 'pending_messages'});
 
 module.exports = User;
