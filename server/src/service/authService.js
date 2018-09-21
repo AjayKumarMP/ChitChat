@@ -72,17 +72,28 @@ module.exports = {
     registreUser: async (user, callback, socketId) => {
         var newUser = '';
         try {
-            newUser = await User.create({
-                name: user.name,
-                email: user.email,
-                password: user.password
+            let userExists =  await User.find({
+                where: {
+                    email: user.email
+                }
             });
+
+            if(!userExists){
+                newUser = await User.create({
+                    name: user.name,
+                    email: user.email,
+                    password: user.password
+                });
+            }else {
+                callback({success: false, message: "user Already exists, Please Login or reset Password"});
+                return;
+            }
         } catch (error) {
             logger.error('Error in regestering User ', user, error);
-            callback(error.message);
+            callback({success: false,message: error.message});
             return;
         }
-        callback(newUser);
+        callback({success: true, message:"user registered successfully",user: newUser});
         return;
     },
 
@@ -119,6 +130,13 @@ module.exports = {
             }
             if (decodedUser.password !== decoded.user.password) {
                 callback({ success: false, message: "UnAuthorised Access" });
+            }
+
+            let userLoggedIn = activeUsers.find(user => user.email === decoded.user.email);
+
+            if (!userLoggedIn) {
+                activeUsers.push(decoded.user);
+                activeSockets.push(socket);
             }
             socket.loggedIn = true;
             socket.userId = decodedUser.id;

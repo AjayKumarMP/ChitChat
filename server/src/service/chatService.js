@@ -10,13 +10,13 @@ module.exports = {
 
     getAllUsers: async (socket, callback) => {
         if (socket.loggedIn) {
-            var InActiveUsers = await getInActiveUsers();
-            if (InActiveUsers) {
-                callback({ activeUsers, InActiveUsers });
+            var inActiveUsers = await getInActiveUsers();
+            if (inActiveUsers) {
+                callback({ activeUsers, inActiveUsers });
                 return;
             }
         }
-        callback({ activeUsers: null, InActiveUsers: null });
+        callback({ activeUsers: null, inActiveUsers: null });
         return;
     },
     sendMessages: async (message, socket, to, callback) => {
