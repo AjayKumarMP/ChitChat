@@ -122,10 +122,10 @@ module.exports = {
             }
             socket.loggedIn = true;
             socket.userId = decodedUser.id;
-            callback({ auth: false, message: 'authentication sucsessfull', token });
+            callback({ success: true, auth: true, message: 'authentication sucsessfull', token });
         } catch (error) {
             console.log("Error in logging in the USer", error.message);
-            callback({ auth: false, message: 'Error in verifying AUTH the USer, Reason:' + error.message });
+            callback({success: false, auth: false, message: 'Error in verifying AUTH the USer, Reason:' + error.message });
         }
     },
 
