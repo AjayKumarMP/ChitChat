@@ -37,6 +37,7 @@ module.exports = {
                     email: to
                 }
             });
+            console.log(toUser);
 
             await Pending_messages.create({
                 message,
@@ -50,7 +51,11 @@ module.exports = {
         }
 
         callback({ success: true, delivered: false, toUser });
-    }
+    },
+
+    joinRoom: async (room, member, socket, callback)=>{
+        socket.join(room)
+    },
 }
 
 var getInActiveUsers = async () => {

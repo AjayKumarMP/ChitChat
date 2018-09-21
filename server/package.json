@@ -20,6 +20,7 @@
   "homepage": "https://github.com/AjayKumarMP/ChitChat#readme",
   "dependencies": {
     "express": "^4.16.3",
+    "jsonwebtoken": "^8.3.0",
     "log4js": "^3.0.5",
     "moment": "^2.22.2",
     "mysql2": "^1.6.1",

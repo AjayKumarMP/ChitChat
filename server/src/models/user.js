@@ -18,6 +18,10 @@ var User = db.sequelize.define('USER', {
         validate: {
             isEmail: true,
         }
+    },
+    password: {
+        type: db.Sequelize.STRING,
+        allowNull: false
     }
 }, {
         freezeTableName: true,
