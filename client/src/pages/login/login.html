@@ -36,7 +36,12 @@
 			<ion-label floating>Re-enter-Password</ion-label>
 			<ion-input type="password" [(ngModel)]="user.reEnterPassword"></ion-input>
 		</ion-item>
-		<ion-input type="checkbox" [(ngModel)]="user.remember">Remember Me</ion-input>
+
+		<ion-item>
+			<ion-label>Remember Me</ion-label>
+			<ion-checkbox *ngIf="isLogin" [(ngModel)]="user.remember"></ion-checkbox>
+		</ion-item>
+
 		<button *ngIf="isLogin" ion-button color="primary" full type="submit" (click)="login()">Sign In</button>
 		<button *ngIf="!isLogin" ion-button color="primary" full type="submit" (click)="signUpUser()">Sign Up</button>		
 		<ion-item *ngIf="isLogin">

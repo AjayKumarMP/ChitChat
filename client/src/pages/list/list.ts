@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
+import { Storage } from '@ionic/storage';
 
 @Component({
   selector: 'page-list',
@@ -9,8 +10,9 @@ export class ListPage {
   selectedItem: any;
   icons: string[];
   items: Array<{title: string, note: string, icon: string}>;
+  users:any =[];
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  constructor(public navCtrl: NavController, private storage: Storage, public navParams: NavParams) {
     // If we navigated to this page, we will have an item available as a nav param
     this.selectedItem = navParams.get('item');
 
@@ -26,6 +28,18 @@ export class ListPage {
         icon: this.icons[Math.floor(Math.random() * this.icons.length)]
       });
     }
+  }
+
+  async ngOnInit(){
+    let localData = await this.storage.get('allUsers');
+    this.users = localData.users;
+    console.log(this.users);
+  }
+
+  public openChat(selectedUser){
+    this.navCtrl.push('Chatpage', {
+      selectedUser
+    });
   }
 
   itemTapped(event, item) {

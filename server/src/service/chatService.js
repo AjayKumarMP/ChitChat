@@ -1,8 +1,9 @@
-const { activeUsers, activeSockets } = require('./authService');
+var { activeUsers, activeSockets } = require('./authService');
 const User = require('../models/user');
 const logger = require('../lib/logger');
 const moment = require('moment')();
 const Pending_messages = require('../models/pending_messages');
+var UserDto = require('../dto/userDto');
 
 module.exports = {
 
@@ -10,13 +11,23 @@ module.exports = {
 
     getAllUsers: async (socket, callback) => {
         if (socket.loggedIn) {
-            var inActiveUsers = await getInActiveUsers();
-            if (inActiveUsers) {
-                callback({ activeUsers, inActiveUsers });
+                var inActiveUsers = await getInActiveUsers();
+
+                inActiveUsers = inActiveUsers.map(user => {
+                    user["socketId"] = socket.id;
+                    let obj = new UserDto(user)
+                    obj["active"] = false
+                    return obj;
+                });
+                activeUsers = activeUsers.map(user => {
+                    user["active"]=true;
+                    return user;
+                });
+                let users = activeUsers.concat(inActiveUsers);
+                callback({ users });
                 return;
-            }
         }
-        callback({ activeUsers: null, inActiveUsers: null });
+        callback({ users: null });
         return;
     },
     sendMessages: async (message, socket, to, callback) => {

@@ -23,6 +23,11 @@ export class MyApp {
   constructor(private storage: Storage, private socket: Socket, public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen) {
     this.initializeApp();
     this.socket.connect();
+
+    this.storage.get('jwt-token').then(token => {
+      this.rootPage = HomePage;
+      this.nav.setRoot(HomePage);
+    });
     // this.storage.set('jwt-token',"dssds");
     // used for an example of ngFor and navigation
     this.pages = [
@@ -39,6 +44,7 @@ export class MyApp {
         this.socket.emit('verify-auth', { token }, (data)=> {
           if(data.success && data.auth){
             this.rootPage = HomePage;
+            this.nav.setRoot(HomePage);
           }else {
             this.rootPage = LoginPage;
           }

@@ -1,8 +1,10 @@
+const jwt = require('jsonwebtoken');
+
 var User = require('../models/user');
 var Pending_messages = require('../models/pending_messages');
 const logger = require('../lib/logger');
 const config = require('../../config/env');
-const jwt = require('jsonwebtoken');
+var UserDto = require('../dto/userDto');
 
 var activeUsers = [];
 var activeSockets = [];
@@ -46,15 +48,17 @@ module.exports = {
 
             if (!userLoggedIn) {
                 activeSockets.push(socket);
-                activeUsers.push({
-                    createdAt: existUser.createdAt,
-                    deletedAt: existUser.deletedAt,
-                    email: existUser.email,
-                    id: existUser.id,
-                    name: existUser.name,
-                    socketId: socket.id,
-                    updatedAt: existUser.updatedAt
-                });
+                existUser["socketId"] = socket.id;
+                activeUsers.push(new UserDto(existUser));
+                // {
+                //     createdAt: existUser.createdAt,
+                //     deletedAt: existUser.deletedAt,
+                //     email: existUser.email,
+                //     id: existUser.id,
+                //     name: existUser.name,
+                //     socketId: socket.id,
+                //     updatedAt: existUser.updatedAt
+                // }
             }
             logger.info('New user has been Logged in', existUser.name, existUser.email);
             callback({ success: true, auth: true, message: "accees granted", user: existUser, token });
@@ -135,6 +139,7 @@ module.exports = {
             let userLoggedIn = activeUsers.find(user => user.email === decoded.user.email);
 
             if (!userLoggedIn) {
+                decoded.user["socketId"] = socket.id;
                 activeUsers.push(decoded.user);
                 activeSockets.push(socket);
             }
