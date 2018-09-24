@@ -2,8 +2,9 @@ import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { Socket } from 'ng-socket-io';
 import { Storage } from '@ionic/storage';
+import { IonicPage } from 'ionic-angular';
 
-import { HomePage }  from '../home/home';
+// import { HomePage }  from '../home/home';
 /**
  * Generated class for the LoginPage page.
  *
@@ -27,6 +28,7 @@ import { HomePage }  from '../home/home';
    }
  }
 
+ @IonicPage()
 @Component({
   selector: 'page-login',
   templateUrl: 'login.html',
@@ -34,7 +36,7 @@ import { HomePage }  from '../home/home';
 export class LoginPage {
 
   public isLogin: boolean = true;
-	private user: UserEntity = new UserEntity;
+	public user: UserEntity = new UserEntity;
   constructor(private socket: Socket, private storage: Storage, public navCtrl: NavController, public navParams: NavParams) {
   }
 
@@ -47,10 +49,11 @@ export class LoginPage {
   		(this.user.password !== null && this.user.password !== '' && this.user.password !== '')){
         this.socket.emit('login',{email: this.user.email, password: this.user.password},(data)=>{
           if(data.success && data.auth){
+            this.storage.set('currentUser',this.user);
             if(this.user.remember){
               this.storage.set('jwt-token',data.token);
             }
-            this.navCtrl.setRoot(HomePage);
+            this.navCtrl.setRoot('HomePage');
           }
         });
   			
@@ -80,6 +83,10 @@ export class LoginPage {
           });
        }
     
+  }
+
+  public forgotPassword(){
+
   }
 
 }

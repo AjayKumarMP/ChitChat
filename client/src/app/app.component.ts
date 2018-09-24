@@ -5,10 +5,6 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { Socket } from 'ng-socket-io';
 import { Storage } from '@ionic/storage';
 
-import { HomePage } from '../pages/home/home';
-import { ListPage } from '../pages/list/list';
-import { LoginPage } from '../pages/login/login';
-
 @Component({
   templateUrl: 'app.html'
 })
@@ -16,7 +12,7 @@ export class MyApp {
   @ViewChild(Nav) nav: Nav;
 
 
-  rootPage: any ;
+  rootPage: any;
 
   pages: Array<{ title: string, component: any }>;
 
@@ -25,34 +21,30 @@ export class MyApp {
     this.socket.connect();
 
     this.storage.get('jwt-token').then(token => {
-      this.rootPage = HomePage;
-      this.nav.setRoot(HomePage);
+      if (token) {
+        this.socket.emit('verify-auth', { token }, (data) => {
+          // console.log(data);
+          if (data.success && data.auth) {
+            this.rootPage = 'HomePage';
+            this.nav.setRoot('HomePage');
+          } else {
+            this.rootPage = 'LoginPage';
+          }
+        });
+      } else {
+        this.rootPage = 'LoginPage';
+      }
     });
     // this.storage.set('jwt-token',"dssds");
     // used for an example of ngFor and navigation
     this.pages = [
-      { title: 'Home', component: HomePage },
-      { title: 'List', component: ListPage }
+      { title: 'Home', component: 'HomePage' },
+      { title: 'List', component: 'ListPage' }
     ];
 
   }
 
-  async ngOnInit() {
-    let token = await this.storage.get('jwt-token');
-    
-      if(token) {
-        this.socket.emit('verify-auth', { token }, (data)=> {
-          if(data.success && data.auth){
-            this.rootPage = HomePage;
-            this.nav.setRoot(HomePage);
-          }else {
-            this.rootPage = LoginPage;
-          }
-        });
-      }else{
-        this.rootPage = LoginPage;
-      }
-
+  ngOnInit() {
   }
 
   initializeApp() {

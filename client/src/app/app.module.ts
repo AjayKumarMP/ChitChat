@@ -5,9 +5,6 @@ import { SocketIoModule, SocketIoConfig } from 'ng-socket-io';
 import { IonicStorageModule } from '@ionic/storage';
 
 import { MyApp } from './app.component';
-import { HomePage } from '../pages/home/home';
-import { ListPage } from '../pages/list/list';
-import { LoginPage } from '../pages/login/login';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -17,9 +14,6 @@ const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
 @NgModule({
   declarations: [
     MyApp,
-    HomePage,
-    ListPage,
-    LoginPage
   ],
   imports: [
     BrowserModule,
@@ -33,9 +27,6 @@ const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
-    HomePage,
-    ListPage,
-    LoginPage
   ],
   providers: [
     StatusBar,
