@@ -8,6 +8,7 @@ class UserDto {
         this.updatedAt = user.updatedAt
         this.socketId = user.socketId
         this.id = user.id;
+        this.active = user.active;
     }
 }
 

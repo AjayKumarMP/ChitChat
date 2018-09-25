@@ -1,16 +1,54 @@
-var { activeUsers, activeSockets } = require('./authService');
+var { getActiveUsers, activeSockets } = require('./authService');
 const User = require('../models/user');
 const logger = require('../lib/logger');
 const moment = require('moment')();
 const Pending_messages = require('../models/pending_messages');
 var UserDto = require('../dto/userDto');
 
+async function getInActiveUsers () {
+    let activeUsers = getActiveUsers();
+    let userIds = activeUsers.map(user => user.id);
+    try {
+        var inActiveUsers = await User.findAll({
+            where: {
+                id: {
+                    $notIn: userIds
+                }
+            }
+        });
+        return inActiveUsers;
+    } catch (error) {
+        logger.info('error in getting inActive users in chatService: getInActiveUsers()', error.message);
+        return false;
+    }
+}
+
 module.exports = {
 
-    getInActiveUsers,
+    getInActiveUsers: getInActiveUsers,
+
+    sendAllUsers: async()=>{
+        let activeUsers = getActiveUsers();
+                var inActiveUsers = await getInActiveUsers();
+
+                inActiveUsers = inActiveUsers.map(user => {
+                    user["socketId"] = socket.id;
+                    let obj = new UserDto(user)
+                    obj["active"] = false
+                    return obj;
+                });
+                activeUsers = activeUsers.map(user => {
+                    user["active"]=true;
+                    return user;
+                });
+                let users = activeUsers.concat(inActiveUsers);
+                return users;
+    },
 
     getAllUsers: async (socket, callback) => {
+        let activeUsers = getActiveUsers();
         if (socket.loggedIn) {
+            console.log("inside get All Users",activeUsers);
                 var inActiveUsers = await getInActiveUsers();
 
                 inActiveUsers = inActiveUsers.map(user => {
@@ -31,6 +69,7 @@ module.exports = {
         return;
     },
     sendMessages: async (message, socket, to, callback) => {
+        let activeUsers = getActiveUsers();
         let toUser = activeUsers.find(user => user.email === to);
         if (toUser) {
             let userSocket = activeSockets.find(socket => socket.id === toUser.socketId);
@@ -40,8 +79,6 @@ module.exports = {
                 return;
             }
         }
-
-
         try {
             toUser = await User.find({
                 where: {
@@ -69,19 +106,3 @@ module.exports = {
     },
 }
 
-var getInActiveUsers = async () => {
-    let userIds = activeUsers.map(user => user.id);
-    try {
-        var inActiveUsers = await User.findAll({
-            where: {
-                id: {
-                    $notIn: userIds
-                }
-            }
-        });
-        return inActiveUsers;
-    } catch (error) {
-        logger.info('error in getting inActive users in chatService: getInActiveUsers()', error.message);
-        return false;
-    }
-}

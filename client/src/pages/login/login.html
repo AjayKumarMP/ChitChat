@@ -37,13 +37,14 @@
 			<ion-input type="password" [(ngModel)]="user.reEnterPassword"></ion-input>
 		</ion-item>
 
-		<ion-item>
+		<ion-item *ngIf="isLogin">
 			<ion-label>Remember Me</ion-label>
 			<ion-checkbox *ngIf="isLogin" [(ngModel)]="user.remember"></ion-checkbox>
 		</ion-item>
 
 		<button *ngIf="isLogin" ion-button color="primary" full type="submit" (click)="login()">Sign In</button>
-		<button *ngIf="!isLogin" ion-button color="primary" full type="submit" (click)="signUpUser()">Sign Up</button>		
+		<button *ngIf="!isLogin" ion-button color="primary" full type="submit" (click)="signUpUser()">Sign Up</button>
+		<button *ngIf="!isLogin" ion-button color="primary" full type="submit" (click)="isLogin = true;">Go To Login</button>		
 		<ion-item *ngIf="isLogin">
 			<ion-grid>
 				<ion-row>

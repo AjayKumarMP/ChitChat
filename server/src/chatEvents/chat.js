@@ -10,11 +10,18 @@ var checkLoggedInStatus = (socket , callback)=>{
     callback({auth: false, message: "Authentication Error"});
 }
 
+var tempIo = '';
+
+function getIO(){
+    return tempIo;
+}
+
 module.exports = {
+    getIO:getIO,
     checkLoggedInStatus,
 
     handleChatOps: (io) => {
-        var users = [];
+        tempIo = io;
         io.on('connection', (socket) => {
             socket.loggedIn = false;
             logger.info("New User conneced");
@@ -37,7 +44,8 @@ module.exports = {
             });
 
             socket.on('disconnect', () => {
-                logoutUser(socket);
+                console.log("user Got disconnected",socket.userId)
+                // logoutUser(socket);
             });
 
             socket.on('getAllUsers', async (callback) => {
@@ -47,6 +55,7 @@ module.exports = {
 
             socket.on("sendMessage", async (data, callback) => {
                 checkLoggedInStatus(socket, callback);
+                // console.log("inside send message",data);
                 await sendMessages(data.message, socket, data.to, callback);
             });
 

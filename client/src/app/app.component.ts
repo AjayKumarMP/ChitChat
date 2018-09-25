@@ -20,6 +20,13 @@ export class MyApp {
     this.initializeApp();
     this.socket.connect();
 
+    this.socket.on('disconnect', (reason) => {
+      console.log("disconnected from Server");
+      // ...	  if (reason === 'io server disconnect') {
+        // the disconnection was initiated by the server, you need to reconnect manually
+        // this.socket.connect();
+      });
+
     this.storage.get('jwt-token').then(token => {
       if (token) {
         this.socket.emit('verify-auth', { token }, (data) => {
@@ -39,7 +46,7 @@ export class MyApp {
     // used for an example of ngFor and navigation
     this.pages = [
       { title: 'Home', component: 'HomePage' },
-      { title: 'List', component: 'ListPage' }
+      { title: 'Users', component: 'ListPage' }
     ];
 
   }

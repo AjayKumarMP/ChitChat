@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { IonicPage } from 'ionic-angular';
+import { Socket } from 'ng-socket-io';
 
 @IonicPage()
 @Component({
@@ -14,7 +15,7 @@ export class ListPage {
   items: Array<{title: string, note: string, icon: string}>;
   users:any =[];
 
-  constructor(public navCtrl: NavController, private storage: Storage, public navParams: NavParams) {
+  constructor(public navCtrl: NavController, private storage: Storage, public navParams: NavParams, private socket: Socket) {
     // If we navigated to this page, we will have an item available as a nav param
     this.selectedItem = navParams.get('item');
 
@@ -33,6 +34,10 @@ export class ListPage {
   }
 
   async ngOnInit(){
+    this.socket.on('AllUsers', (data)=>{
+      this.users = data.users;
+      this.storage.set('allUsers',data.users);
+    });
     let localData = await this.storage.get('allUsers');
     this.users = localData.users;
     console.log(this.users);

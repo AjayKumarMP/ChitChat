@@ -5,13 +5,21 @@ var Pending_messages = require('../models/pending_messages');
 const logger = require('../lib/logger');
 const config = require('../../config/env');
 var UserDto = require('../dto/userDto');
+var { getIO } = require('../chatEvents/chat');
+var { sendAllUsers } = require('./chatService');
 
 var activeUsers = [];
 var activeSockets = [];
 
+function getAllActiveUsers() {
+    return activeUsers;
+}
+
+
+
 
 module.exports = {
-    activeUsers,
+    getActiveUsers: getAllActiveUsers,
     activeSockets,
     /**
      * 
@@ -49,6 +57,7 @@ module.exports = {
             if (!userLoggedIn) {
                 activeSockets.push(socket);
                 existUser["socketId"] = socket.id;
+                existUser["active"] = true;
                 activeUsers.push(new UserDto(existUser));
                 // {
                 //     createdAt: existUser.createdAt,
@@ -60,11 +69,13 @@ module.exports = {
                 //     updatedAt: existUser.updatedAt
                 // }
             }
+            let allUsersToSend = await sendAllUsers();
+            getIO.emit('AllUsers', { users: allUsersToSend });
             logger.info('New user has been Logged in', existUser.name, existUser.email);
             callback({ success: true, auth: true, message: "accees granted", user: existUser, token });
         } catch (error) {
-            console.log("Error in logging in the USer", err.message);
-            callback({ success: false, message: "Error in logging in the USer" + err.message });
+            console.log("Error in logging in the USer", error);
+            callback({ success: false, message: "Error in logging in the USer" + error.message });
         }
 
     },
@@ -76,28 +87,30 @@ module.exports = {
     registreUser: async (user, callback, socketId) => {
         var newUser = '';
         try {
-            let userExists =  await User.find({
+            let userExists = await User.find({
                 where: {
                     email: user.email
                 }
             });
 
-            if(!userExists){
+            if (!userExists) {
                 newUser = await User.create({
                     name: user.name,
                     email: user.email,
                     password: user.password
                 });
-            }else {
-                callback({success: false, message: "user Already exists, Please Login or reset Password"});
+            } else {
+                callback({ success: false, message: "user Already exists, Please Login or reset Password" });
                 return;
             }
         } catch (error) {
             logger.error('Error in regestering User ', user, error);
-            callback({success: false,message: error.message});
+            callback({ success: false, message: error.message });
             return;
         }
-        callback({success: true, message:"user registered successfully",user: newUser});
+        let allUsersToSend = await sendAllUsers();
+        getIO.emit('AllUsers', { users: allUsersToSend });
+        callback({ success: true, message: "user registered successfully", user: newUser });
         return;
     },
 
@@ -106,6 +119,7 @@ module.exports = {
             var existUser = activeUsers.filter(user => user.id === socket.userId);
             // var existUser = await User.find({ where: { socketId: socket.id } });
             // await User.update({ active: false }, { where: { socketId: socket.id } })
+            console.log("inside logout user");
             if (existUser.length > 0) {
                 socket.loggedIn = false;
                 socket.userId = null;
@@ -114,6 +128,8 @@ module.exports = {
             } else {
                 logger.error('Error in fetching user', existUser);
             }
+            let allUsersToSend = await sendAllUsers();
+            getIO.emit('AllUsers', {users:allUsersToSend});
         } catch (error) {
             logger.error('Error in fetching user', error);
         }
@@ -138,17 +154,28 @@ module.exports = {
 
             let userLoggedIn = activeUsers.find(user => user.email === decoded.user.email);
 
-            if (!userLoggedIn) {
-                decoded.user["socketId"] = socket.id;
-                activeUsers.push(decoded.user);
-                activeSockets.push(socket);
+            if (userLoggedIn) {
+                let oldSocetToRemove = activeSockets.find(socket => socket.id === userLoggedIn.socketId);
+                activeSockets.splice(activeSockets.indexOf(oldSocetToRemove), 1);
+                activeUsers.splice(activeUsers.indexOf(userLoggedIn), 1);
             }
+
+            // if (!userLoggedIn) {
+            decoded.user["socketId"] = socket.id;
+            decoded.user["active"] = true;
+            activeUsers.push(new UserDto(decoded.user));
+            console.log("inside verify-auth", activeUsers);
+            // activeUsers.push(decoded.user);
+            activeSockets.push(socket);
+            // }
             socket.loggedIn = true;
             socket.userId = decodedUser.id;
+            let allUsersToSend = await sendAllUsers();
+            getIO.emit('AllUsers', {users:allUsersToSend});
             callback({ success: true, auth: true, message: 'authentication sucsessfull', token });
         } catch (error) {
-            console.log("Error in logging in the USer", error.message);
-            callback({success: false, auth: false, message: 'Error in verifying AUTH the USer, Reason:' + error.message });
+            console.log("Error in logging in the USer", error);
+            callback({ success: false, auth: false, message: 'Error in verifying AUTH the USer, Reason:' + error.message });
         }
     },
 
