@@ -10,14 +10,7 @@ var checkLoggedInStatus = (socket , callback)=>{
     callback({auth: false, message: "Authentication Error"});
 }
 
-var tempIo = '';
-
-function getIO(){
-    return tempIo;
-}
-
 module.exports = {
-    getIO:getIO,
     checkLoggedInStatus,
 
     handleChatOps: (io) => {
@@ -28,24 +21,24 @@ module.exports = {
             console.log("New User conneced");
 
             socket.on("verify-auth", async (data, callback) => {
-                await verifyAuth(data.token, socket, callback);
+                await verifyAuth(data.token, socket, callback, io);
             });
 
             socket.on('login', async (user, callback) => {
-                await loginUser(user, socket, callback);
+                await loginUser(user, socket, callback, io);
             });
 
             socket.on('logout', async () => {
-                logoutUser(socket);
+                logoutUser(socket, io);
             });
 
             socket.on('register', async (user, callback) => {
-                await registreUser(user, callback, socket.id);
+                await registreUser(user, callback, socket.id, io);
             });
 
             socket.on('disconnect', () => {
                 console.log("user Got disconnected",socket.userId)
-                // logoutUser(socket);
+                logoutUser(socket, io);
             });
 
             socket.on('getAllUsers', async (callback) => {

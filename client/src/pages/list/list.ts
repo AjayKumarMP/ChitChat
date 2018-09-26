@@ -4,6 +4,8 @@ import { Storage } from '@ionic/storage';
 import { IonicPage } from 'ionic-angular';
 import { Socket } from 'ng-socket-io';
 
+import { AppService } from '../../app/app.service';
+
 @IonicPage()
 @Component({
   selector: 'page-list',
@@ -15,32 +17,36 @@ export class ListPage {
   items: Array<{title: string, note: string, icon: string}>;
   users:any =[];
 
-  constructor(public navCtrl: NavController, private storage: Storage, public navParams: NavParams, private socket: Socket) {
+  constructor(public navCtrl: NavController, private storage: Storage, public navParams: NavParams,
+     private socket: Socket, private appService: AppService) {
     // If we navigated to this page, we will have an item available as a nav param
     this.selectedItem = navParams.get('item');
 
     // Let's populate this page with some filler content for funzies
     this.icons = ['flask', 'wifi', 'beer', 'football', 'basketball', 'paper-plane',
     'american-football', 'boat', 'bluetooth', 'build'];
-
-    this.items = [];
-    for (let i = 1; i < 11; i++) {
-      this.items.push({
-        title: 'Item ' + i,
-        note: 'This is item #' + i,
-        icon: this.icons[Math.floor(Math.random() * this.icons.length)]
-      });
-    }
   }
 
   async ngOnInit(){
-    this.socket.on('AllUsers', (data)=>{
-      this.users = data.users;
+    let userData = await this.storage.get('currentUser');
+    if(!userData){
+      this.navCtrl.push('HomePage');
+      return;
+    }
+    this.socket.on('AllUsers', async (data)=>{
+      let tempData = await this.storage.get('currentUser');
+      this.users = data.users.filter(user=>{
+        return user.email !== tempData.email;
+      });
+      console.log("users got updated")
       this.storage.set('allUsers',data.users);
     });
     let localData = await this.storage.get('allUsers');
-    this.users = localData.users;
-    console.log(this.users);
+    if(localData.users){
+      this.users = localData.users.filter(user=>{
+        return user.email !== userData.email;
+      });
+    }
   }
 
   public openChat(selectedUser){

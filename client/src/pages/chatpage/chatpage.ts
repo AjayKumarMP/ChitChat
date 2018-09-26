@@ -35,7 +35,6 @@ export class Chatpage {
 
     // code which will look for the new incoming messages from the server. 
     this.socket.on('newMessage', (data)=>{
-      console.log(data);
         this.messages.push({data: data.message, from: data.from, styleClass:'chat-message left'});
     });
 

@@ -5,11 +5,12 @@ import { SocketIoModule, SocketIoConfig } from 'ng-socket-io';
 import { IonicStorageModule } from '@ionic/storage';
 
 import { MyApp } from './app.component';
+import { AppService } from './app.service';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
-const config: SocketIoConfig = { url: 'http://localhost:3000', options: {
+const config: SocketIoConfig = { url: 'http://10.16.84.134:3000', options: {
   reconnection: true,
   reconnectionDelay: 1000,
   reconnectionDelayMax : 5000,
@@ -36,6 +37,7 @@ const config: SocketIoConfig = { url: 'http://localhost:3000', options: {
   providers: [
     StatusBar,
     SplashScreen,
+    AppService,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })

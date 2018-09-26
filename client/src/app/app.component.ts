@@ -5,6 +5,8 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { Socket } from 'ng-socket-io';
 import { Storage } from '@ionic/storage';
 
+import { AppService } from './app.service';
+
 @Component({
   templateUrl: 'app.html'
 })
@@ -16,7 +18,8 @@ export class MyApp {
 
   pages: Array<{ title: string, component: any }>;
 
-  constructor(private storage: Storage, private socket: Socket, public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen) {
+  constructor(private storage: Storage, private socket: Socket, public platform: Platform,
+     public statusBar: StatusBar, public splashScreen: SplashScreen, private appService: AppService) {
     this.initializeApp();
     this.socket.connect();
 
@@ -27,21 +30,7 @@ export class MyApp {
         // this.socket.connect();
       });
 
-    this.storage.get('jwt-token').then(token => {
-      if (token) {
-        this.socket.emit('verify-auth', { token }, (data) => {
-          // console.log(data);
-          if (data.success && data.auth) {
-            this.rootPage = 'HomePage';
-            this.nav.setRoot('HomePage');
-          } else {
-            this.rootPage = 'LoginPage';
-          }
-        });
-      } else {
-        this.rootPage = 'LoginPage';
-      }
-    });
+    
     // this.storage.set('jwt-token',"dssds");
     // used for an example of ngFor and navigation
     this.pages = [
@@ -51,7 +40,23 @@ export class MyApp {
 
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    var token = await this.storage.get('jwt-token');
+      if (token) {
+        this.socket.emit('verify-auth', { token }, (data) => {
+          console.log("inside b=verify auth",data);
+          if (data.success && data.auth) {
+            this.appService.setCurrentUser(data.user);
+            this.storage.set('currentUser',data.user);
+            this.rootPage = 'HomePage';
+            this.nav.setRoot('HomePage');
+          } else {
+            this.rootPage = 'LoginPage';
+          }
+        });
+      } else {
+        this.rootPage = 'LoginPage';
+      }
   }
 
   initializeApp() {

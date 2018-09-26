@@ -1,12 +1,17 @@
-var { getActiveUsers, activeSockets } = require('./authService');
 const User = require('../models/user');
 const logger = require('../lib/logger');
 const moment = require('moment')();
 const Pending_messages = require('../models/pending_messages');
 var UserDto = require('../dto/userDto');
+var { setActiveUser,
+    getAllActiveUsers,
+    deleteActiveSocket,
+    deleteActiveUser,
+    getAllActiveSockets,
+    setActiveSocket }  = require('./activeData');
 
 async function getInActiveUsers () {
-    let activeUsers = getActiveUsers();
+    let activeUsers = getAllActiveUsers();
     let userIds = activeUsers.map(user => user.id);
     try {
         var inActiveUsers = await User.findAll({
@@ -28,11 +33,11 @@ module.exports = {
     getInActiveUsers: getInActiveUsers,
 
     sendAllUsers: async()=>{
-        let activeUsers = getActiveUsers();
+        let activeUsers = getAllActiveUsers();
                 var inActiveUsers = await getInActiveUsers();
 
                 inActiveUsers = inActiveUsers.map(user => {
-                    user["socketId"] = socket.id;
+                    user["socketId"] = null;
                     let obj = new UserDto(user)
                     obj["active"] = false
                     return obj;
@@ -46,7 +51,7 @@ module.exports = {
     },
 
     getAllUsers: async (socket, callback) => {
-        let activeUsers = getActiveUsers();
+        let activeUsers = getAllActiveUsers();
         if (socket.loggedIn) {
             console.log("inside get All Users",activeUsers);
                 var inActiveUsers = await getInActiveUsers();
@@ -69,7 +74,8 @@ module.exports = {
         return;
     },
     sendMessages: async (message, socket, to, callback) => {
-        let activeUsers = getActiveUsers();
+        let activeUsers = getAllActiveUsers();
+        let activeSockets = getAllActiveSockets();
         let toUser = activeUsers.find(user => user.email === to);
         if (toUser) {
             let userSocket = activeSockets.find(socket => socket.id === toUser.socketId);

@@ -17,3 +17,5 @@ server.listen(config.port, config.host, () => {
 });
 
 handleChatOps(io);
+
+module.exports = io;
