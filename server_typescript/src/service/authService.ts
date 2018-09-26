@@ -10,8 +10,13 @@ import ActiveData from './activeData';
 import io from '../index';
 
 export default class AuthService{
+    private activeData:ActiveData;
+    private chatService: ChatService;
     
-    constructor(private activeData:ActiveData, private chatService: ChatService){}
+    constructor(){
+        this.chatService = new ChatService();
+        this.activeData = new ActiveData();
+    }
 
     public  async loginUser(user:any, socket:any, callback:any) {
         try {

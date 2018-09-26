@@ -5,7 +5,12 @@ import io from '../index';
 
 export default class Chat{
 
-    constructor(private authService:AuthService, private chatService: ChatService){
+    private authService:AuthService;
+    private chatService: ChatService;
+    
+    constructor(){
+        this.authService = new AuthService();
+        this.chatService = new ChatService();
     }
 
     public checkLoggedInStatus(socket:any , callback:any){

@@ -1,12 +1,16 @@
 import ActiveData from './activeData';
 import User from '../models/user';
 import logger from '../lib/logger';
-import moment from 'moment';
+// import {moment} from 'moment';
 import Pending_messages from '../models/pending_messages';
 import UserDto from '../dto/userDto';
 
 export default class ChatService{
-    constructor(private activeData: ActiveData){}
+    private activeData: ActiveData;
+    // private moment: Moment ;
+    constructor(){
+        this.activeData = new ActiveData();
+    }
 
     public async getInActiveUsers () {
         let activeUsers = this.activeData.activeUsers;
@@ -75,7 +79,7 @@ export default class ChatService{
         if (toUser) {
             let userSocket = activeSockets.find((socket: any) => socket.id === toUser.socketId);
             if (userSocket) {
-                userSocket.emit("newMessage", { from: socket.userId, message, sentAt: moment().valueOf() });
+                userSocket.emit("newMessage", { from: socket.userId, message, sentAt: new Date() });
                 callback({ success: true, delivered: true });
                 return;
             }

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Socket } from 'ng-socket-io';
 import * as $ from "jquery";
+import { AppService } from '../../app/app.service';
 
 // import { HomePage } from '../home/home';
 /**
@@ -18,25 +19,26 @@ import * as $ from "jquery";
 })
 export class Chatpage {
 
-  public user:{name:'',active:boolean,email: string} = {name:'',active:false, email:''};
+  public user:any;
+  private subscription: any;
   public message:any = '';
-  public messages :Array<{data:any, from: any, styleClass:any}> = [];
+  public messages :Array<{to:any, data:any, from: any, styleClass:any}> = [];
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private socket: Socket) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, private socket: Socket, 
+              private appService: AppService) {
     let currentUser = this.navParams.get('selectedUser');
     if(!currentUser){
       // this.navCtrl.setRoot(HomePage);
       this.navCtrl.setRoot('HomePage');
       return;
     }else {
+      this.appService.setCurrentChatUser(currentUser);
+      this.appService.chatTabOpened = true;
       this.user = currentUser;
     }
     console.log(this.user);
 
-    // code which will look for the new incoming messages from the server. 
-    this.socket.on('newMessage', (data)=>{
-        this.messages.push({data: data.message, from: data.from, styleClass:'chat-message left'});
-    });
+    
 
     // setInterval(()=>{
     //   this.messages.push({data: "dihsdhisdi", from: 'ajay', styleClass:'chat-message left'});
@@ -48,9 +50,24 @@ export class Chatpage {
     console.log('ionViewDidLoad ChatpagePage');
   }
 
-  async ngOnInit(){
-  }
+  ngOnInit(){ 
+    this.messages = JSON.parse(JSON.stringify(this.appService.getAllMessagesOfUser(this.user.id)));
+    this.subscription = this.appService.getMessage()
+    .subscribe((message: any)=>{
+      this.messages.push(message);
+    },err=>{
+      console.log("error in getting message from server, In ChatPage.ts:56",err);
+    });
+   }
 
+  ngOnDestroy(){
+    this.appService.setCurrentUser(undefined);
+    this.appService.chatTabOpened = false;
+    // unsubscribe to ensure no memory leaks
+    if(this.subscription){
+      this.subscription.unsubscribe();
+    }
+  }
   
 
   public sendMessage(message){
@@ -58,7 +75,9 @@ export class Chatpage {
       console.log(data);
     });
     this.message = ''
-    this.messages.push({data: message, from: null, styleClass:'chat-message right'});
+    let msg = {to: this.user.email, data: message, from: null, styleClass:'chat-message right'};
+    this.appService.addToMessagesRepository(msg)
+     this.messages.push(msg);
     // this.scrollToBottom();
   }
 
