@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/AjayKumarMP/ChitChat#readme",
   "dependencies": {
+    "@types/socket.io": "^1.4.38",
     "express": "^4.16.3",
     "jsonwebtoken": "^8.3.0",
     "log4js": "^3.0.5",
