@@ -36,14 +36,6 @@ export class Chatpage {
       this.appService.chatTabOpened = true;
       this.user = currentUser;
     }
-    console.log(this.user);
-
-    
-
-    // setInterval(()=>{
-    //   this.messages.push({data: "dihsdhisdi", from: 'ajay', styleClass:'chat-message left'});
-    //   this.scrollToBottom();
-    // },7000);
   }
 
   ionViewDidLoad() {
@@ -53,8 +45,8 @@ export class Chatpage {
   ngOnInit(){ 
     this.messages = JSON.parse(JSON.stringify(this.appService.getAllMessagesOfUser(this.user.id)));
     this.subscription = this.appService.getMessage()
-    .subscribe((message: any)=>{
-      this.messages.push(message);
+    .subscribe((data: any)=>{
+      this.messages.push(data.message);
     },err=>{
       console.log("error in getting message from server, In ChatPage.ts:56",err);
     });

@@ -30,16 +30,41 @@ export class ListPage {
 
   constructor(public navCtrl: NavController, private storage: Storage, public navParams: NavParams,
     private socket: Socket, private appService: AppService) {
-    // If we navigated to this page, we will have an item available as a nav param
-    this.selectedItem = navParams.get('item');
-
-    // Let's populate this page with some filler content for funzies
-    this.icons = ['flask', 'wifi', 'beer', 'football', 'basketball', 'paper-plane',
-      'american-football', 'boat', 'bluetooth', 'build'];
+      this.appService.getMessage()
+      .subscribe((data: any) =>{
+        let user = this.users.find(user=>{
+          return  user.id === data.from;
+        });
+        if(this.users[this.users.indexOf(user)] && this.users[this.users.indexOf(user)]["msgsCount"]){
+          this.users[this.users.indexOf(user)]["msgsCount"] += 1;
+        }else {
+          this.users[this.users.indexOf(user)]["msgsCount"] = 1;
+        }
+      });
   }
 
-  async ngOnInit() {
-    let userData = await this.storage.get('currentUser');
+  async ionViewDidLoad(){
+
+    this.socket.emit('getAllUsers', async (data)=>{
+      this.storage.set('allUsers',data.users);
+
+      this.messageRepository = this.appService.getAllMsgsFromRepo();
+
+    const userData = await this.storage.get('currentUser');      
+    if (data.users) {
+      this.users = data.users.filter(user => {
+        let len ;
+        if(this.messageRepository[user.id]){
+        len = this.messageRepository[user.id].filter(msg =>{
+          return msg.viewed == false;
+        });
+      }
+        user["msgsCount"] = len?len.length:len;
+        return user.email !== userData.email;
+      });
+    }
+    });
+    const userData = await this.storage.get('currentUser');      
     if (!userData) {
       this.navCtrl.push('HomePage');
       return;
@@ -54,23 +79,11 @@ export class ListPage {
       this.storage.set('allUsers', data.users);
     });
 
-    this.messageRepository = this.appService.getAllMsgsFromRepo();
-    let localData = await this.storage.get('allUsers');
-    if (localData.users) {
-      this.users = localData.users.filter(user => {
-        let len ;
-        if(this.messageRepository[user.id]){
-        len = this.messageRepository[user.id].filter(msg =>{
-          return msg.viewed == false;
-        });
-      }
-        user["msgsCount"] = len?len.length:len;
-        return user.email !== userData.email;
-      });
-    }
+    
   }
 
   public openChat(selectedUser) {
+      this.users[this.users.indexOf(selectedUser)]["msgsCount"] = undefined;
     this.appService.setMsgsAsViewed(selectedUser.id);
     this.navCtrl.push('Chatpage', {
       selectedUser

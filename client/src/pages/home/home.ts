@@ -19,10 +19,6 @@ export class HomePage {
   }
 
   ngOnInit(){
-    this.socket.emit('getAllUsers', (users)=>{
-      console.log(users);
-      this.storage.set('allUsers',users);
-    });
   }
 
 }

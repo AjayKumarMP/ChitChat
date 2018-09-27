@@ -48,8 +48,8 @@ export class MyApp {
           if (data.success && data.auth) {
             this.appService.setCurrentUser(data.user);
             this.storage.set('currentUser',data.user);
-            this.rootPage = 'HomePage';
-            this.nav.setRoot('HomePage');
+            this.rootPage = 'ListPage';
+            this.nav.setRoot('ListPage');
           } else {
             this.rootPage = 'LoginPage';
           }

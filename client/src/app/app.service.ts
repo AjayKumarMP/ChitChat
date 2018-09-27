@@ -19,12 +19,14 @@ export class AppService {
         this.messageRepository[data.from] = [];
       }
 
-      if (this.chatTabOpened && this.currentChatUser && this.currentChatUser.id === data.from) {
-        this.sendMessage(msg);
-        this.messageRepository[data.from].push({ message: msg, viewed: true });
-      } else {
-        this.messageRepository[data.from].push({ message: msg, viewed: false });
-      }
+      this.sendMessage(msg, data.from);
+      this.messageRepository[data.from].push({ message: msg, viewed: true });
+      // if (this.chatTabOpened && this.currentChatUser && this.currentChatUser.id === data.from) {
+      //   this.sendMessage(msg, data.from);
+      //   this.messageRepository[data.from].push({ message: msg, viewed: true });
+      // } else {
+      //   this.messageRepository[data.from].push({ message: msg, viewed: false });
+      // }
     });
   }
 
@@ -34,8 +36,8 @@ export class AppService {
     }
     this.messageRepository[this.currentChatUser.id].push(message);
   }
-  sendMessage(message: any) {
-    this.incomingMessages.next(message);
+  sendMessage(message: any, from: any) {
+    this.incomingMessages.next({message, from});
   }
 
   clearMessage() {
@@ -49,8 +51,9 @@ export class AppService {
   getAllMessagesOfUser(userId: number) {
     if (this.messageRepository && this.messageRepository[userId]) {
       const msgs = this.messageRepository[userId] && this.messageRepository[userId].map(msg => {
-        return msgs;
+        return msg.message;
       });
+      return msgs;
     }
     // .filter(message =>{
     //     return message.from === userId;
