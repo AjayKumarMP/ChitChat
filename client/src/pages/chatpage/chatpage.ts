@@ -76,7 +76,7 @@ export class Chatpage {
     });
     this.message = ''
     let msg = {to: this.user.email, data: message, from: null, styleClass:'chat-message right'};
-    this.appService.addToMessagesRepository(msg)
+    this.appService.addToMessagesRepository({message:msg, viewed: true});
      this.messages.push(msg);
     // this.scrollToBottom();
   }

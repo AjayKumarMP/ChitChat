@@ -1,5 +1,5 @@
-import db from'../lib/db';
-import Pending_messages from'./pending_messages';
+import db from '../lib/db';
+import Pending_messages from './pending_messages';
 
 var User = db.sequelize.define('USER', {
     id: {

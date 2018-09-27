@@ -1,36 +1,35 @@
 import AuthService from '../service/authService';
 import ChatService from '../service/chatService';
 import logger from '../lib/logger';
-import io from '../index';
 
-export default class Chat{
+export default class Chat {
 
-    private authService:AuthService;
+    private authService: AuthService;
     private chatService: ChatService;
-    
-    constructor(){
+
+    constructor() {
         this.authService = new AuthService();
         this.chatService = new ChatService();
     }
 
-    public checkLoggedInStatus(socket:any , callback:any){
-        if(socket.loggedIn && socket.userId){
+    public checkLoggedInStatus(socket: any, callback: any) {
+        if (socket.loggedIn && socket.userId) {
             return;
         }
-        callback({auth: false, message: "Authentication Error"});
+        callback({ auth: false, message: "Authentication Error" });
     }
 
-    public handleChatOps(){
-        io.on('connection', (socket:any) => {
+    public handleChatOps(io: any) {
+        io.on('connection', (socket: any) => {
             socket.loggedIn = false;
             logger.info("New User conneced");
             console.log("New User conneced");
 
-            socket.on("verify-auth", async (data:any, callback:any) => {
+            socket.on("verify-auth", async (data: any, callback: any) => {
                 await this.authService.verifyAuth(data.token, socket, callback);
             });
 
-            socket.on('login', async (user:any, callback:any) => {
+            socket.on('login', async (user: any, callback: any) => {
                 await this.authService.loginUser(user, socket, callback);
             });
 
@@ -38,30 +37,30 @@ export default class Chat{
                 this.authService.logoutUser(socket);
             });
 
-            socket.on('register', async (user:any, callback:any) => {
+            socket.on('register', async (user: any, callback: any) => {
                 await this.authService.registreUser(user, callback, socket.id);
             });
 
             socket.on('disconnect', () => {
-                console.log("user Got disconnected",socket.userId)
+                console.log("user Got disconnected", socket.userId)
                 // logoutUser(socket);
             });
 
-            socket.on('getAllUsers', async (callback:any) => {
+            socket.on('getAllUsers', async (callback: any) => {
                 this.checkLoggedInStatus(socket, callback);
                 await this.chatService.getAllUsers(socket, callback);
             });
 
-            socket.on("sendMessage", async (data:any, callback:any) => {
+            socket.on("sendMessage", async (data: any, callback: any) => {
                 this.checkLoggedInStatus(socket, callback);
-                // console.log("inside send message",data);
+                console.log("inside send message", data);
                 await this.chatService.sendMessages(data.message, socket, data.to, callback);
             });
 
-            socket.on("joinRoom", async (data:any, callback:any)=>{
+            socket.on("joinRoom", async (data: any, callback: any) => {
                 this.checkLoggedInStatus(socket, callback);
                 this.chatService.joinRoom(data.room, data.member, socket, callback);
             });
         });
-    }   
+    }
 }

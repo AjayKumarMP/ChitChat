@@ -123,8 +123,8 @@ export default class AuthService{
             callback({ auth: false, message: 'No token provided.' });
         }
         try {
-            var decoded:any = await jwt.verify(token, config.secret);
-            var decodedUser = await User.findById(decoded.user.id);
+            let decoded: any = await jwt.verify(token, config.secret);
+            let decodedUser = await User.findById(decoded.user.id);
             let activeUsers = this.activeData.activeUsers;
             let activeSockets = this.activeData.activeSockets;
             // var user = { id: 10, name: "user", email: "user@gmail.com", password: "password" };
@@ -136,7 +136,7 @@ export default class AuthService{
                 callback({ success: false, message: "UnAuthorised Access" });
             }
 
-            let userLoggedIn = activeUsers.find((user: any) => user.email === decoded.user.email);
+            const userLoggedIn = activeUsers.find((user: any) => user.email === decoded.user.email);
 
             if (userLoggedIn) {
                 let oldSocetToRemove = activeSockets.find((socket: any) => socket.id === userLoggedIn.socketId);

@@ -10,6 +10,7 @@ import { AppService } from './app.service';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
+
 const config: SocketIoConfig = { url: 'http://localhost:3000', options: {
   reconnection: true,
   reconnectionDelay: 1000,

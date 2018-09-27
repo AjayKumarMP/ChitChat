@@ -1,32 +1,32 @@
-import UserDto from '../dto/userDto';
+import UserDto from "../dto/userDto";
 
 export default class ActiveData {
-    private _activeUsers:any;
-    private _activeSockets:any;
+    private _activeUsers: any;
+    private _activeSockets: any;
     constructor(){}
 
-    get activeUsers(){
+    get activeUsers() {
         return this._activeUsers;
     }
 
-    public removeActiveUser(user: any){
-        this._activeUsers.splice(user, 1);
-    }
-
-    public removeActiveSocket(socket: any){
-        this._activeUsers.splice(socket, 1);
-    }
-
-    set activeUsers(user:any){
-        let newUser = new UserDto(user);
+    set activeUsers(user: any) {
+        const newUser = new UserDto(user);
         this._activeUsers.push(newUser);
     }
 
-    get activeSockets(){
+    public removeActiveUser(user: any) {
+        this._activeUsers.splice(user, 1);
+    }
+
+    public removeActiveSocket(socket: any) {
+        this._activeUsers.splice(socket, 1);
+    }
+
+    get activeSockets() {
         return this._activeSockets;
     }
 
-    set activeSockets(socket:any){
+    set activeSockets(socket: any) {
         this._activeSockets.push(socket);
     }
 }
