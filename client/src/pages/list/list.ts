@@ -26,49 +26,55 @@ export class ListPage {
     socketId: '',
     id: null
   };
-  public messageRepository:any;
+  public messageRepository: any;
+  private messageSubscription: any;
+  private currentChatUser: any;
 
   constructor(public navCtrl: NavController, private storage: Storage, public navParams: NavParams,
     private socket: Socket, private appService: AppService) {
-      this.appService.getMessage()
-      .subscribe((data: any) =>{
-        let user = this.users.find(user=>{
-          return  user.id === data.from;
-        });
-        if(this.users[this.users.indexOf(user)] && this.users[this.users.indexOf(user)]["msgsCount"]){
-          this.users[this.users.indexOf(user)]["msgsCount"] += 1;
-        }else {
-          this.users[this.users.indexOf(user)]["msgsCount"] = 1;
+    this.messageSubscription = this.appService.getMessage()
+      .subscribe((data: any) => {
+        if (!this.currentChatUser) {
+          let user = this.users.find(user => {
+            return user.id === data.from;
+          });
+          if (this.users[this.users.indexOf(user)] && this.users[this.users.indexOf(user)]["msgsCount"]) {
+            this.users[this.users.indexOf(user)]["msgsCount"] += 1;
+          } else {
+            this.users[this.users.indexOf(user)]["msgsCount"] = 1;
+          }
         }
       });
   }
 
-  async ionViewDidLoad(){
+  async ionViewDidLoad() {
 
-    this.socket.emit('getAllUsers', async (data)=>{
-      this.storage.set('allUsers',data.users);
+    this.socket.emit('getAllUsers', async (data) => {
+      this.storage.set('allUsers', data.users);
 
       this.messageRepository = this.appService.getAllMsgsFromRepo();
 
-    const userData = await this.storage.get('currentUser');      
-    if (data.users) {
-      this.users = data.users.filter(user => {
-        let len ;
-        if(this.messageRepository[user.id]){
-        len = this.messageRepository[user.id].filter(msg =>{
-          return msg.viewed == false;
+      const userData = await this.storage.get('currentUser');
+      if (data.users) {
+        this.users = data.users.filter(user => {
+          let len;
+          if (this.messageRepository[user.id]) {
+            len = this.messageRepository[user.id].filter(msg => {
+              return msg.viewed == false;
+            });
+          }
+          user["msgsCount"] = len ? len.length : len;
+          return user.email !== userData.email;
         });
       }
-        user["msgsCount"] = len?len.length:len;
-        return user.email !== userData.email;
-      });
-    }
     });
-    const userData = await this.storage.get('currentUser');      
+    const userData = await this.storage.get('currentUser');
     if (!userData) {
       this.navCtrl.push('HomePage');
       return;
     }
+
+
 
     this.socket.on('AllUsers', async (data) => {
       let tempData = await this.storage.get('currentUser');
@@ -79,12 +85,23 @@ export class ListPage {
       this.storage.set('allUsers', data.users);
     });
 
-    
+
+  }
+
+  ngOnDestroy() {
+    if (this.messageSubscription) {
+      this.messageSubscription.unsubscribe();
+    }
+  }
+
+  ionViewWillEnter() {
+    this.currentChatUser = undefined;
   }
 
   public openChat(selectedUser) {
-      this.users[this.users.indexOf(selectedUser)]["msgsCount"] = undefined;
+    this.users[this.users.indexOf(selectedUser)]["msgsCount"] = undefined;
     this.appService.setMsgsAsViewed(selectedUser.id);
+    this.currentChatUser = selectedUser;
     this.navCtrl.push('Chatpage', {
       selectedUser
     });
