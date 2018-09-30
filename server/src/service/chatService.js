@@ -1,4 +1,4 @@
-const User = require('../models/user');
+const {User} = require('../models/user');
 const logger = require('../lib/logger');
 const moment = require('moment')();
 const Pending_messages = require('../models/pending_messages');
@@ -108,7 +108,7 @@ module.exports = {
     },
 
     joinRoom: async (room, member, socket, callback)=>{
-        socket.join(room)
+        socket.join(room);
     },
 }
 

@@ -22,6 +22,10 @@ var User = db.sequelize.define('USER', {
     password: {
         type: db.Sequelize.STRING,
         allowNull: false
+    },
+    last_seen:{
+        type: db.Sequelize.BIGINT,
+        allowNull: true
     }
 }, {
         freezeTableName: true,
@@ -31,4 +35,17 @@ var User = db.sequelize.define('USER', {
 
 User.hasMany(Pending_messages, {as : 'pending_messages'});
 
-module.exports = User;
+module.exports = {
+    User,
+    updateUser: async (userId)=>{
+        const updatedUser = await User.update({
+            last_seen: Date.now(),
+        },
+        {
+            where: {
+                     id: userId,
+                }
+        });
+        return updatedUser;
+    },
+};

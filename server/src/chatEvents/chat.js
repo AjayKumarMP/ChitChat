@@ -1,4 +1,4 @@
-const User = require('../models/user');
+const {User} = require('../models/user');
 const { loginUser, registreUser, logoutUser, verifyAuth } = require('../service/authService');
 const { getAllUsers, sendMessages, joinRoom } = require('../service/chatService');
 const logger = require('../lib/logger');

@@ -9,6 +9,7 @@ class UserDto {
         this.socketId = user.socketId
         this.id = user.id;
         this.active = user.active;
+        this.last_seen = user.last_seen;
     }
 }
 

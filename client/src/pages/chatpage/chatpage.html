@@ -8,7 +8,7 @@
 
   <ion-navbar>
     <ion-title>{{user.name}}</ion-title>
-    <p id="userStatus">{{user.active?'online':'last seen: 8:30pm 27th Aug 2018'}}</p>
+    <p id="userStatus">{{user.active?'online':user.last_seen | date:'dd-MMM-y h:mm a'}}</p>
   </ion-navbar>
 
 </ion-header>

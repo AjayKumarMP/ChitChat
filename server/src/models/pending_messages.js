@@ -11,7 +11,7 @@ var Pending_messages = db.sequelize.define('MESSAGE', {
         allowNull: false
     },
     from: {
-        type: db.Sequelize.STRING,
+        type: db.Sequelize.BIGINT,
         allowNull: false,
     }
 }, {

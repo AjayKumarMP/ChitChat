@@ -25,9 +25,13 @@ function deleteActiveSocket(socket) {
 }
 
 function deleteActiveUser(user) {
-    activeUsers.splice(activeUsers.indexOf(user), 1);
+    const userToBeDeleted = activeUsers.find(usr => {
+        return usr.id === user.id;
+    });
+    activeUsers.splice(activeUsers.indexOf(userToBeDeleted), 1);
     return activeUsers;
 }
+
 module.exports = {
     setActiveUser,
     getAllActiveUsers,

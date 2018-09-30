@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-var User = require('../models/user');
+var { User, updateUser } = require('../models/user');
 var Pending_messages = require('../models/pending_messages');
 const logger = require('../lib/logger');
 const config = require('../../config/env');
@@ -19,15 +19,17 @@ module.exports = {
     loginUser: async (user, socket, callback, getIO) => {
         try {
             let activeUsers = getAllActiveUsers();
-            var existUser = await User.find({
-                where: {
-                    email: user.email
-                },
-                include: [{
-                    model: Pending_messages,
-                    as: 'pending_messages'
-                }]
-            });
+            var existUser = await User.find(
+                {
+                    include: [{
+                        model: Pending_messages,
+                        as: 'pending_messages'
+                    }],
+                    where: {
+                        email: user.email
+                    }
+                }
+            );
 
             // var user = { id: 1, name: "user", email: "user@gmail.com", password: "password" };
             // var user = await User.findOne({ where: { email: req.body.email } });
@@ -80,7 +82,7 @@ module.exports = {
                 newUser = await User.create({
                     name: user.name,
                     email: user.email,
-                    password: user.password
+                    password: user.password,
                 });
             } else {
                 callback({ success: false, message: "user Already exists, Please Login or reset Password" });
@@ -101,13 +103,13 @@ module.exports = {
         try {
             let activeUsers = getAllActiveUsers();
             var existUser = activeUsers.filter(user => user.id === socket.userId);
-            // var existUser = await User.find({ where: { socketId: socket.id } });
-            // await User.update({ active: false }, { where: { socketId: socket.id } })
             console.log("inside logout user");
             if (existUser.length > 0) {
                 socket.loggedIn = false;
                 socket.userId = null;
+                const update_user = await updateUser(existUser[0].id);
                 activeUsers = deleteActiveUser(existUser[0]);
+                console.log("user after to be deleted", activeUsers);
                 logger.info('A user has been Logged out', existUser[0].name, existUser[0].email);
             } else {
                 logger.error('Error in fetching user', existUser);
@@ -128,7 +130,20 @@ module.exports = {
         }
         try {
             var decoded = await jwt.verify(token, config.secret);
-            var decodedUser = await User.findById(decoded.user.id);
+            var decodedUser = await User.findById(decoded.user.id, 
+                {
+                    include:  [{
+                        model: Pending_messages,
+                        as: 'pending_messages'
+                    }]
+                }
+            );
+
+            Pending_messages.destroy({
+                where:{ 
+                    USERId: decoded.user.id 
+                },
+            });
             // var user = { id: 10, name: "user", email: "user@gmail.com", password: "password" };
             // var user = await User.findById(decoded.user.id);
             if (!decoded.user) {
