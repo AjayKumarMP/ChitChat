@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Socket } from 'ng-socket-io';
 import * as $ from "jquery";
@@ -19,6 +19,7 @@ import { AppService } from '../../app/app.service';
 })
 export class Chatpage {
 
+  @ViewChild('messageDIv') content: ElementRef;
   public user:any;
   private subscription: any;
   public message:any = '';
@@ -47,6 +48,7 @@ export class Chatpage {
     this.subscription = this.appService.getMessage()
     .subscribe((data: any)=>{
       this.messages.push(data.message);
+      this.scrollToBottom();
     },err=>{
       console.log("error in getting message from server, In ChatPage.ts:56",err);
     });
@@ -68,9 +70,9 @@ export class Chatpage {
     });
     this.message = ''
     let msg = {to: this.user.email, data: message, from: null, styleClass:'chat-message right'};
-    this.appService.addToMessagesRepository({message:msg, viewed: true});
+    this.appService.addToMessagesRepository({message:msg, viewed: true, from: Date.now()}, {from: this.user.id});
      this.messages.push(msg);
-    // this.scrollToBottom();
+    this.scrollToBottom();
   }
 
   public scrollToBottom(){
@@ -83,10 +85,14 @@ export class Chatpage {
     let newMessageHeight = new_message.innerHeight();
     let lastMessageHeight = new_message.prev().innerHeight();
 
+    this.content.nativeElement.scrollToBottom(0);
+
     if(clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight){
       console.log("should scroll");
       messages.scrollTop(scrollHeight);
-      messages.animate({ scrollTop: scrollHeight}, 1000);
+      // this.content.nativeElement.scrollHeight(scrollHeight);
+      this.content.nativeElement.scrollToBottom(0);
+      // messages.animate({ scrollTop: scrollHeight}, 1000);
     }
   }
 

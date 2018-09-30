@@ -46,6 +46,13 @@ export class MyApp {
         this.socket.emit('verify-auth', { token }, (data) => {
           console.log("inside b=verify auth",data);
           if (data.success && data.auth) {
+            if(data.user.pending_messages.length > 0){
+              data.user.pending_messages.forEach(msg =>{
+              let msgFormat = { data: msg.message, to: null, sentAt:msg.createdAt, from: msg.from, styleClass: 'chat-message left' };
+              this.appService.addToMessagesRepository({message: msgFormat,viewed: false},
+              {from: msg.from} );
+              });
+            }
             this.appService.setCurrentUser(data.user);
             this.storage.set('currentUser',data.user);
             this.rootPage = 'ListPage';

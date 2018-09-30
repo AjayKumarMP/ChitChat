@@ -14,13 +14,13 @@ export class AppService {
   constructor(private socket: Socket) {
     // code which will look for the new incoming messages from the server. 
     this.socket.on('newMessage', (data) => {
-      let msg = { data: data.message, to: null, from: data.from, styleClass: 'chat-message left' };
+      let msg = { data: data.message, to: null, sentAt:data.sentAt, from: data.from, styleClass: 'chat-message left' };
       if (!this.messageRepository[data.from]) {
         this.messageRepository[data.from] = [];
       }
 
       this.sendMessage(msg, data.from);
-      this.messageRepository[data.from].push({ message: msg, viewed: true });
+      this.messageRepository[data.from].push({ message: msg, viewed: true});
       // if (this.chatTabOpened && this.currentChatUser && this.currentChatUser.id === data.from) {
       //   this.sendMessage(msg, data.from);
       //   this.messageRepository[data.from].push({ message: msg, viewed: true });
@@ -30,11 +30,11 @@ export class AppService {
     });
   }
 
-  public addToMessagesRepository(message: any) {
-    if (!this.messageRepository[this.currentChatUser.id]) {
-      this.messageRepository[this.currentChatUser.id] = [];
+  public addToMessagesRepository(message: any, user: any) {
+    if (!this.messageRepository[user.from]) {
+      this.messageRepository[user.from] = [];
     }
-    this.messageRepository[this.currentChatUser.id].push(message);
+    this.messageRepository[user.from].push(message);
   }
   sendMessage(message: any, from: any) {
     this.incomingMessages.next({message, from});

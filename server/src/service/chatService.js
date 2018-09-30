@@ -80,7 +80,7 @@ module.exports = {
         if (toUser) {
             let userSocket = activeSockets.find(socket => socket.id === toUser.socketId);
             if (userSocket) {
-                userSocket.emit("newMessage", { from: socket.userId, message, sentAt: moment.valueOf() });
+                userSocket.emit("newMessage", { from: socket.userId, message, sentAt: Date.now() });
                 callback({ success: true, delivered: true });
                 return;
             }

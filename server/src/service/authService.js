@@ -31,6 +31,8 @@ module.exports = {
                 }
             );
 
+
+
             // var user = { id: 1, name: "user", email: "user@gmail.com", password: "password" };
             // var user = await User.findOne({ where: { email: req.body.email } });
             if (!existUser) {
@@ -48,6 +50,11 @@ module.exports = {
             socket.token = token;
             let userLoggedIn = activeUsers.find(user => user.email === existUser.email);
 
+            Pending_messages.destroy({
+                where:{ 
+                    USERId: existUser.id 
+                },
+            });
             if (!userLoggedIn) {
                 setActiveSocket(socket)
                 existUser["socketId"] = socket.id;

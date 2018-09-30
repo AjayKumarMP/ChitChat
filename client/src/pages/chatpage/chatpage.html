@@ -15,7 +15,7 @@
 
 
 <ion-content padding>
-  <div style="display: grid;" id="messages">
+  <div style="display: grid;" #messageDIv>
     <div *ngFor="let msg of messages;let i = index" id="msg">
       <div [ngClass]="msg.styleClass">
         <div class="msg-detail">

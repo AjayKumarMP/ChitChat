@@ -3,6 +3,7 @@ import { NavController, NavParams } from 'ionic-angular';
 import { Socket } from 'ng-socket-io';
 import { Storage } from '@ionic/storage';
 import { IonicPage } from 'ionic-angular';
+import { AppService } from '../../app/app.service';
 
 // import { HomePage }  from '../home/home';
 /**
@@ -37,7 +38,8 @@ export class LoginPage {
 
   public isLogin: boolean = true;
 	public user: UserEntity = new UserEntity;
-  constructor(private socket: Socket, private storage: Storage, public navCtrl: NavController, public navParams: NavParams) {
+  constructor(private socket: Socket, private storage: Storage, public navCtrl: NavController, public navParams: NavParams,
+    private appService: AppService) {
   }
 
   ionViewDidLoad() {
@@ -53,7 +55,14 @@ export class LoginPage {
             if(this.user.remember){
               this.storage.set('jwt-token',data.token);
             }
-            this.navCtrl.setRoot('HomePage');
+            if(data.user.pending_messages.length > 0){
+              data.user.pending_messages.forEach(msg =>{
+              let msgFormat = { data: msg.message, to: null, sentAt:msg.createdAt, from: msg.from, styleClass: 'chat-message left' };
+              this.appService.addToMessagesRepository({message: msgFormat,viewed: false},
+              {from: msg.from} );
+              });
+            }
+            this.navCtrl.setRoot('ListPage');
           }
         });
   			
