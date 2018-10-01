@@ -6,7 +6,7 @@
 -->
 <ion-header>
 
-  <ion-navbar>
+  <ion-navbar *ngIf="user">
     <ion-title>{{user.name}}</ion-title>
     <p id="userStatus">{{user.active?'online':user.last_seen | date:'dd-MMM-y h:mm a'}}</p>
   </ion-navbar>
@@ -15,11 +15,13 @@
 
 
 <ion-content padding>
-  <div style="display: grid;" #messageDIv>
+  <div class="chat" #messageDIv [scrollTop]="messageDIv.scrollHeight">
     <div *ngFor="let msg of messages;let i = index" id="msg">
-      <div [ngClass]="msg.styleClass">
+      <p [ngClass]="msg.styleClass"></p>
+      <div style="display: inherit;" [ngClass]="msg.styleClass">
         <div class="msg-detail">
-          {{msg.data}}
+          {{msg.data}}<br />
+          <p>{{msg.sentAt | date:'h:mm a'}}</p>
         </div>
       </div>
     </div>

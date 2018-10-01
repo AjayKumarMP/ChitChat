@@ -21,4 +21,9 @@ export class HomePage {
   ngOnInit(){
   }
 
+  logout(){
+    this.storage.clear();
+    this.navCtrl.setRoot('LoginPage');
+  }
+
 }
