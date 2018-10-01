@@ -1,3 +1,11 @@
 page-login {
-
+    .login {
+        background: url(../../assets/imgs/logo.png);
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-position: center;
+        margin: auto;
+        z-index: 2;
+        position: relative;
+    }
 }

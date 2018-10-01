@@ -34,6 +34,9 @@ export class Chatpage {
     this.subscription = this.appService.getMessage()
       .subscribe((data: any) => {
         this.messages.push(data.message);
+        if(!this.user.active){
+          this.user.active = true;
+        }
       }, err => {
         console.log("error in getting message from server, In ChatPage.ts:56", err);
       });

@@ -49,10 +49,12 @@ export class LoginPage {
   public login(){
   	if((this.user.email !== null && this.user.email !== '' && this.user.email !== '') &&
   		(this.user.password !== null && this.user.password !== '' && this.user.password !== '')){
-        this.socket.emit('login',{email: this.user.email, password: this.user.password},(data)=>{
+        this.socket.emit('login',{email: this.user.email, password: this.user.password}, async(data)=>{
           if(data.success && data.auth){
+            await this.storage.remove('currentUser');
             this.storage.set('currentUser',this.user);
             if(this.user.remember){
+            await this.storage.remove('jwt-token');
               this.storage.set('jwt-token',data.token);
             }
             if(data.user.pending_messages.length > 0){

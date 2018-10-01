@@ -22,6 +22,7 @@ export class HomePage {
   }
 
   logout(){
+    this.socket.emit('logout');
     this.storage.clear();
     this.navCtrl.setRoot('LoginPage');
   }

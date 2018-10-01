@@ -16,16 +16,7 @@ export class ListPage {
   icons: string[];
   items: Array<{ title: string, note: string, icon: string }>;
   users: any = [];
-  public searchTerm: any = {
-    name: '',
-    email: '',
-    password: '',
-    createdAt: '',
-    deletedAt: "",
-    updatedAt: '',
-    socketId: '',
-    id: null
-  };
+  public searchTerm = '';
   public messageRepository: any;
   private messageSubscription: any;
   private currentChatUser: any;
@@ -50,6 +41,7 @@ export class ListPage {
   async ionViewDidLoad() {
 
     this.socket.emit('getAllUsers', async (data) => {
+      await this.storage.remove('allUsers');
       this.storage.set('allUsers', data.users);
 
       this.messageRepository = this.appService.getAllMsgsFromRepo();
@@ -78,10 +70,13 @@ export class ListPage {
 
     this.socket.on('AllUsers', async (data) => {
       let tempData = await this.storage.get('currentUser');
-      this.users = data.users.filter(user => {
-        return user.email !== tempData.email;
-      });
+      if(tempData.email){
+        this.users = data.users.filter(user => {
+          return user.email !== tempData.email;
+        });
+      }
       console.log("users got updated")
+      this.storage.remove('allUsers');
       this.storage.set('allUsers', data.users);
     });
 

@@ -43,8 +43,7 @@ export class MyApp {
   async ngOnInit() {
     var token = await this.storage.get('jwt-token');
       if (token) {
-        this.socket.emit('verify-auth', { token }, (data) => {
-          console.log("inside b=verify auth",data);
+        this.socket.emit('verify-auth', { token },async (data) => {
           if (data.success && data.auth) {
             if(data.user.pending_messages.length > 0){
               data.user.pending_messages.forEach(msg =>{
@@ -54,6 +53,7 @@ export class MyApp {
               });
             }
             this.appService.setCurrentUser(data.user);
+            await this.storage.remove('currentUser');
             this.storage.set('currentUser',data.user);
             this.rootPage = 'ListPage';
             this.nav.setRoot('ListPage');

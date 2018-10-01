@@ -8,9 +8,9 @@
 </ion-header>
 
 <ion-content>
-    <ion-searchbar [(ngModel)]="searchTerm.name"></ion-searchbar>
+    <ion-searchbar [(ngModel)]="searchTerm"></ion-searchbar>
   <ion-list>
-    <ion-item-sliding *ngFor="let user of users |filter: searchTerm.name">
+    <ion-item-sliding *ngFor="let user of users |filter: searchTerm">
       <ion-item (click)="openChat(user)">
         <ion-avatar item-start>
           <img src="assets/imgs/logo.png">

@@ -17,7 +17,6 @@ var Pending_messages = db.sequelize.define('MESSAGE', {
 }, {
         freezeTableName: true,
         tableName: "pending_messages",
-        paranoid: true,
     });
 
 
