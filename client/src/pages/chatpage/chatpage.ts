@@ -20,6 +20,8 @@ import { AppService } from '../../app/app.service';
 export class Chatpage {
 
   public user: any;
+  @ViewChild('chat_input') messageInput: ElementRef;
+  public showEmojiPicker: boolean = false;
   private subscription: any;
   public message: any = '';
   public messages: Array<{ to: any, data: any, sentAt: any, from: any, styleClass: any }> = [];
@@ -65,6 +67,7 @@ export class Chatpage {
 
 
   public sendMessage(message) {
+    if (!message.trim()) return;
     this.socket.emit('sendMessage', { message, to: this.user.email }, (data) => {
       console.log(data);
     });
@@ -72,6 +75,23 @@ export class Chatpage {
     let msg = { to: this.user.email, sentAt: Date.now(), data: message, from: null, styleClass: 'chat-message right' };
     this.appService.addToMessagesRepository({ message: msg, viewed: true }, { from: this.user.id });
     this.messages.push(msg);
+  }
+
+  switchEmojiPicker() {
+    this.showEmojiPicker = !this.showEmojiPicker;
+    if (!this.showEmojiPicker) {
+      this.focus();
+    } 
+  }
+
+  private focus() {
+    if (this.messageInput && this.messageInput.nativeElement) {
+      this.messageInput.nativeElement.focus();
+    }
+  }
+
+  onFocus() {
+    this.showEmojiPicker = false;
   }
 
 }

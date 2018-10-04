@@ -27,31 +27,35 @@
     </div>
   </div>
 
-
-  <!-- <ul>
-    <li style="display: inline-block" [style.float]="message.me?'right':'left'" *ngFor="let message of messages">{{message.data}}</li>
-  </ul> -->
-
-
-  <!-- <ion-row style="margin-top:38%">
-    <ion-col col-md-11 col-sm-11 col-xs-11>
-      <ion-item>
-          <ion-input type="text" placeholder="type message..." [(ngModel)]="message" ></ion-input>
-      </ion-item>
-    </ion-col>
-    <ion-col col-md-1 col-sm-1 col-xs-1 >
-          <button ion-button color="primary"  type="submit" (click)="sendMessage(message)">SEND</button>
-    </ion-col>
-  </ion-row> -->
 </ion-content>
 
-<ion-footer ion-fixed>
+<ion-footer ion-fixed no-border [style.height]="showEmojiPicker ? '255px' : '55px'">
   <ion-toolbar class="no-border" color="white">
-    <ion-input id="messageInput" (keydown.enter)='sendMessage(message)' [(ngModel)]="message" placeholder="Write your message ..."></ion-input>
-    <ion-buttons end>
-      <button ion-button (click)="sendMessage(message)">
-        <ion-icon name="send" color="primary"></ion-icon>
-      </button>
-    </ion-buttons>
+    <ion-row>
+      <ion-col col-md-1>
+          <button ion-button clear icon-only  (click)="switchEmojiPicker()">
+              <ion-icon name="md-happy"></ion-icon>
+            </button>
+      </ion-col>
+      <ion-col com-md-11>
+          <ion-input (keydown.enter)="sendMessage(message)" #chat_input id="messageInput" placeholder="Write your message ..." [(ngModel)]="message" (keyup.enter)="sendMessage(message)"
+          (focusin)="onFocus()"></ion-input>
+        
+        <ion-buttons end>
+            <button ion-button clear icon-only item-right (click)="sendMessage(message)">
+                <ion-icon name="ios-send" ios="ios-send" md="md-send"></ion-icon>
+              </button>
+          <!-- <button ion-button (click)="sendMessage(message)">
+            <ion-icon name="send" color="primary"></ion-icon>
+          </button> -->
+        </ion-buttons>
+      </ion-col>
+    </ion-row>
+    <!-- <textarea #chat_input id="messageInput" placeholder="Write your message ..." [(ngModel)]="message" (keyup.enter)="sendMessage(message)"
+      (focusin)="onFocus()">
+
+    </textarea> -->
+    
   </ion-toolbar>
+  <emoji-picker [(ngModel)]="message"></emoji-picker>
 </ion-footer>
