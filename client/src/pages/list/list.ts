@@ -47,7 +47,7 @@ export class ListPage {
       this.messageRepository = this.appService.getAllMsgsFromRepo();
 
       const userData = await this.storage.get('currentUser');
-      if (data.users) {
+      if (data.users !== undefined && data.users.length > 0) {
         this.users = data.users.filter(user => {
           let len;
           if (this.messageRepository[user.id]) {
@@ -102,10 +102,9 @@ export class ListPage {
     });
   }
 
-  itemTapped(event, item) {
-    // That's right, we're pushing to ourselves!
-    this.navCtrl.push('ListPage', {
-      item: item
-    });
+  logout(){
+    this.socket.emit('logout');
+    this.storage.clear();
+    this.navCtrl.setRoot('LoginPage');
   }
 }

@@ -37,7 +37,9 @@ export class AppService {
     this.messageRepository[user.from].push(message);
   }
   sendMessage(message: any, from: any) {
-    this.incomingMessages.next({message, from});
+    if(this.currentChatUser.id === from){
+      this.incomingMessages.next({message, from});
+    }
   }
 
   clearMessage() {

@@ -9,6 +9,11 @@
   <ion-navbar *ngIf="user">
     <ion-title>{{user.name}}</ion-title>
     <p id="userStatus">{{user.active?'online':user.last_seen | date:'dd-MMM-y h:mm a'}}</p>
+    <ion-buttons end>
+        <button ion-button >
+          <ion-icon name="camera"></ion-icon>
+        </button>
+      </ion-buttons>
   </ion-navbar>
 
 </ion-header>
@@ -29,7 +34,7 @@
 
 </ion-content>
 
-<ion-footer ion-fixed no-border [style.height]="showEmojiPicker ? '255px' : '55px'">
+<!-- <ion-footer ion-fixed no-border [style.height]="showEmojiPicker ? '255px' : '55px'">
   <ion-toolbar class="no-border" color="white">
     <ion-row>
       <ion-col col-md-1>
@@ -45,17 +50,29 @@
             <button ion-button clear icon-only item-right (click)="sendMessage(message)">
                 <ion-icon name="ios-send" ios="ios-send" md="md-send"></ion-icon>
               </button>
-          <!-- <button ion-button (click)="sendMessage(message)">
-            <ion-icon name="send" color="primary"></ion-icon>
-          </button> -->
+          
         </ion-buttons>
       </ion-col>
     </ion-row>
-    <!-- <textarea #chat_input id="messageInput" placeholder="Write your message ..." [(ngModel)]="message" (keyup.enter)="sendMessage(message)"
-      (focusin)="onFocus()">
-
-    </textarea> -->
+    
     
   </ion-toolbar>
   <emoji-picker [(ngModel)]="message"></emoji-picker>
-</ion-footer>
+</ion-footer> -->
+<ion-footer ion-fixed no-border [style.height]="showEmojiPicker ? '255px' : '55px'">
+    <div class="input-wrap">
+      <button ion-button clear icon-only item-right (click)="switchEmojiPicker()">
+        <ion-icon name="md-happy"></ion-icon>
+      </button>
+      <textarea #chat_input style="padding-top: 7px;"
+                placeholder="Write your message ..."
+                [(ngModel)]="message"
+                (keyup.enter)="sendMessage(message)"
+                (focusin)="onFocus()">
+      </textarea>
+      <button ion-button clear icon-only item-right (click)="sendMessage(message)">
+        <ion-icon name="ios-send" ios="ios-send" md="md-send"></ion-icon>
+      </button>
+    </div>
+    <emoji-picker [(ngModel)]="message"></emoji-picker>
+  </ion-footer>
